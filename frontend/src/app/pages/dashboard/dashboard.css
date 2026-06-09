@@ -1,0 +1,93 @@
+/* Estilos Generales de la Interfaz del Dashboard */
+
+.dashboard-layout {
+  min-height: 100vh;
+  background-color: #f8fafc;
+  color: #1e293b;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navbar */
+.navbar {
+  background: white;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-sizing: border-box;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.nav-icon {
+  width: 28px;
+  height: 28px;
+  color: #049f6c;
+}
+
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.user-greeting {
+  font-size: 15px;
+  color: #475569;
+}
+
+.btn-logout {
+  background: #f1f5f9;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-logout:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.logout-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.dashboard-body {
+  display: flex;
+  flex: 1;
+  width: 100%;
+}
+
+
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  padding: 40px 32px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
