@@ -23,7 +23,7 @@ import { Usuario } from './usuario/model/usuario.model';
         port: configService.get<number>('DB_PORT', 5432),
         username: configService.get<string>('DB_USERNAME', 'postgres'),
         password: configService.get<string>('DB_PASSWORD', 'postgres'),
-        database: configService.get<string>('DB_DATABASE', 'inventario_simple'),
+        database: configService.get<string>('DB_DATABASE', 'inventario_db'),
         entities: [Product, Usuario],
         synchronize: configService.get<boolean>('DB_SYNCHRONIZE', true),
       }),
