@@ -1,0 +1,101 @@
+<div class="products-container">
+  <!-- Header -->
+  <div class="products-header">
+    <h2>📦 Productos</h2>
+    <button class="btn-primary" (click)="openCreateForm()">+ Nuevo Producto</button>
+  </div>
+
+  <!-- Modal del formulario -->
+  <div class="modal-overlay" *ngIf="showForm()" (click)="closeForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ isEditing() ? '✏️ Editar' : '✨ Nuevo Producto' }}</h3>
+        <button class="close-btn" (click)="closeForm()">✕</button>
+      </div>
+      
+      <div class="form-group">
+        <label>📦 Nombre </label>
+        <input [(ngModel)]="currentProduct.name" placeholder="Ej: Coca Cola 600ml" />
+      </div>
+      
+      <div class="form-group">
+        <label>📝 Descripción</label>
+        <textarea [(ngModel)]="currentProduct.description" placeholder="Opcional"></textarea>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label>💰 Precio</label>
+          <input type="number" [(ngModel)]="currentProduct.price" placeholder="0.00" step="0.01" />
+        </div>
+        
+        <div class="form-group">
+          <label>📊 Cantidad</label>
+          <input type="number" [(ngModel)]="currentProduct.stock" placeholder="0" />
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>🔢 Código (opcional)</label>
+        <input [(ngModel)]="currentProduct.sku" placeholder="Déjalo vacío si no tienes" />
+      </div>
+      
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" [(ngModel)]="currentProduct.activo" />
+          ✅ Producto disponible
+        </label>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeForm()">Cancelar</button>
+        <button class="btn-primary" (click)="saveProduct()">💾 Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading()" class="loader-box">
+    <div class="spinner"></div>
+    <p>Cargando...</p>
+  </div>
+
+  <!-- Tabla -->
+  <table *ngIf="!loading() && products().length > 0" class="custom-table">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Precio</th>
+        <th>Cantidad</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let p of products()">
+        <td><strong>{{ p.name }}</strong><br/><small>{{ p.description || '-' }}</small></td>
+        <td class="text-right">{{ p.price | currency:'USD' }}</td>
+        <td class="text-center">
+          <span [class]="p.stock <= 5 ? 'stock-badge critical' : 'stock-badge normal'">
+            {{ p.stock }}
+          </span>
+        </td>
+        <td class="text-center">
+          <span [class]="p.activo !== false ? 'status-badge active' : 'status-badge inactive'">
+            {{ p.activo !== false ? 'Activo' : 'Inactivo' }}
+          </span>
+        </td>
+        <td class="text-center">
+          <button class="icon-btn edit" (click)="openEditForm(p)">✏️</button>
+          <button class="icon-btn delete" (click)="deleteProduct(p)">🗑️</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Vacío -->
+  <div *ngIf="!loading() && products().length === 0" class="empty-state">
+    <p>📭 No hay productos</p>
+    <button class="btn-primary" (click)="openCreateForm()">Crear producto</button>
+  </div>
+</div>

@@ -5,7 +5,7 @@ import { catchError, map, Observable, of, throwError } from "rxjs";
 @Injectable({providedIn: 'root'})
 export class BasicService {
     private serviceHttp = inject(HttpClient);
-    private baseUrl = 'http://localhost:5050/api';
+    private baseUrl = 'http://localhost:3000/api';
 
     basePost(methodUrl: string, data: any): Observable<any> {
         return this.serviceHttp
