@@ -5,7 +5,7 @@ import { catchError, map, Observable, of, throwError } from "rxjs";
 @Injectable({providedIn: 'root'})
 export class BasicService {
     private serviceHttp = inject(HttpClient);
-    private baseUrl = 'http://localhost:5050/api';
+    private baseUrl = 'https://inventario-nestjs-angular-production.up.railway.app/api';
 
     basePost(methodUrl: string, data: any): Observable<any> {
         return this.serviceHttp
