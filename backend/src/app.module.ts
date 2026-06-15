@@ -19,11 +19,6 @@ import { UsuarioModule } from './usuario/usuario.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         const databaseUrl = configService.get<string>('DATABASE_URL') || configService.get<string>('DATABASE_PUBLIC_URL');
-
-        console.log('====================');
-        console.log('DATABASE_URL:', databaseUrl);
-        console.log('====================');
-
         return {
           type: 'postgres' as const,
           url: databaseUrl || 'postgresql://postgres:postgres@localhost:5432/postgres',
