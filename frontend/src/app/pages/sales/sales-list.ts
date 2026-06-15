@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { BasicService } from '../../service/basic.service';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface Product {
   id: number;
@@ -183,5 +185,38 @@ export class SalesList implements OnInit {
 
   private getSearchTokens(value: string): string[] {
     return this.normalizeSearch(value).split(' ').filter(Boolean);
+  }
+
+  downloadReceiptPDF(sale: Sale): void {
+    const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+    const title = 'Recibo de Venta';
+    doc.setFontSize(16);
+    doc.text(title, 40, 50);
+    doc.setFontSize(11);
+    const headerY = 80;
+
+    doc.text(`Nro. venta: ${sale.id}`, 40, headerY);
+    doc.text(`Fecha: ${this.formatDate(sale.sale_date)}`, 40, headerY + 16);
+    doc.text(`Usuario: ${sale.user?.name || 'Usuario'}`, 40, headerY + 32);
+    doc.text(`Total unidades: ${this.getSaleItemsCount(sale)}`, 40, headerY + 48);
+
+    autoTable(doc, {
+      startY: 140,
+      head: [['#', 'Producto', 'Cant.', 'Precio', 'Subtotal']],
+      body: sale.details.map((detail, index) => [
+        String(index + 1),
+        detail.product?.name || `Producto ${detail.product_id}`,
+        String(detail.quantity),
+        this.formatBs(detail.unit_price),
+        this.formatBs(this.getLineTotal(detail)),
+      ]),
+      headStyles: { fillColor: [22, 163, 74], textColor: 255 },
+      styles: { fontSize: 10, cellPadding: 6 },
+      columnStyles: { 0: { cellWidth: 30 }, 2: { halign: 'center' }, 3: { halign: 'right' }, 4: { halign: 'right' } }
+    });
+
+    const tableFinalY = (doc as any).lastAutoTable?.finalY || 170;
+    doc.text(`Total final: ${this.formatBs(sale.total_amount)}`, 40, tableFinalY + 30);
+    doc.save(`recibo-venta-${sale.id}.pdf`);
   }
 }

@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { BasicService } from '../../service/basic.service';
 import { SessionService } from '../../service/session.service';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface Product {
   id: number;
@@ -20,6 +22,7 @@ interface CartItem {
   quantity: number;
   unit_price: number;
   stock: number;
+  sku?: string;
 }
 
 const MAX_SALE_QUANTITY = 999999;
@@ -101,6 +104,7 @@ export class Sales implements OnInit {
         quantity: 1,
         unit_price: Number(product.price || 0),
         stock,
+        sku: product.sku || '',
       }
     ];
   }
@@ -216,6 +220,25 @@ export class Sales implements OnInit {
         const items = Array.isArray(sale?.details)
           ? sale.details.reduce((sum, detail) => sum + Number(detail.quantity || 0), 0)
           : this.getCartItemsCount();
+
+        const receiptData = {
+          saleId: sale?.id || '',
+          saleDate: new Date().toISOString(),
+          userId,
+          items: this.cart.map((item) => ({
+            product_id: item.product_id,
+            name: item.name,
+            sku: item.sku || '',
+            quantity: Number(item.quantity),
+            unit_price: Number(item.unit_price),
+            line_total: this.getLineTotal(item),
+          })),
+          total_amount: total,
+          total_items: items,
+        };
+
+        sessionStorage.setItem('lastSaleReceipt', JSON.stringify(receiptData));
+        sessionStorage.setItem('lastSaleReceiptDownloaded', 'false');
 
         this.cart = [];
         this.searchTerm = '';
