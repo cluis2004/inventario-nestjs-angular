@@ -19,24 +19,14 @@ import { UsuarioModule } from './usuario/usuario.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         const databaseUrl = configService.get<string>('DATABASE_URL');
-        if (databaseUrl) {
-          return {
-            type: 'postgres' as const,
-            url: databaseUrl,
-            autoLoadEntities: true,
-            synchronize: false,
-          };
-        }
-
         return {
           type: 'postgres' as const,
-          host: configService.get<string>('PGHOST'),
-          port: Number(configService.get<string>('PGPORT')),
-          username: configService.get<string>('PGUSER'),
-          password: configService.get<string>('PGPASSWORD'),
-          database: configService.get<string>('PGDATABASE'),
+          url: databaseUrl || 'postgresql://postgres:postgres@localhost:5432/postgres',
           autoLoadEntities: true,
           synchronize: false,
+          ssl: databaseUrl && !databaseUrl.includes('localhost') && !databaseUrl.includes('127.0.0.1')
+            ? { rejectUnauthorized: false }
+            : false,
         };
       },
     }),
@@ -49,4 +39,3 @@ import { UsuarioModule } from './usuario/usuario.module';
   providers: [AppService],
 })
 export class AppModule {}
-
