@@ -17,16 +17,28 @@ import { UsuarioModule } from './usuario/usuario.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get<string>('PGHOST'),
-        port: Number(configService.get<string>('PGPORT')),
-        username: configService.get<string>('PGUSER'),
-        password: configService.get<string>('PGPASSWORD'),
-        database: configService.get<string>('PGDATABASE'),
-        autoLoadEntities: true,
-        synchronize: false,
-      }),
+      useFactory: (configService: ConfigService) => {
+        const databaseUrl = configService.get<string>('DATABASE_URL');
+        if (databaseUrl) {
+          return {
+            type: 'postgres' as const,
+            url: databaseUrl,
+            autoLoadEntities: true,
+            synchronize: false,
+          };
+        }
+
+        return {
+          type: 'postgres' as const,
+          host: configService.get<string>('PGHOST'),
+          port: Number(configService.get<string>('PGPORT')),
+          username: configService.get<string>('PGUSER'),
+          password: configService.get<string>('PGPASSWORD'),
+          database: configService.get<string>('PGDATABASE'),
+          autoLoadEntities: true,
+          synchronize: false,
+        };
+      },
     }),
     ProductsModule,
     SalesModule,
