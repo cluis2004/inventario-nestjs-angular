@@ -18,12 +18,12 @@ export class ProductsService {
 
     /**
      * Obtiene el listado de todos los productos registrados en el sistema,
-     * ordenados por su ID de manera ascendente.
+     * ordenados por su ID de manera descendente para mostrar primero los mas nuevos.
      * @returns Promesa con el arreglo de productos.
      */
     getAll() {
         return this.repository.find({
-            order: { id: 'ASC' }
+            order: { id: 'DESC' }
         });
     }
 
@@ -61,18 +61,19 @@ export class ProductsService {
     }
 
     /**
-     * Elimina físicamente un producto del sistema basándose en su ID.
-     * Primero verifica la existencia del producto antes de proceder.
-     * @param id Identificador numérico del producto a eliminar.
-     * @returns Mensaje de confirmación en texto plano de la eliminación.
+     * Desactiva lógicamente un producto del sistema basándose en su ID.
+     * Esto preserva el historial para ventas y movimientos de inventario ya registrados.
+     * @param id Identificador numérico del producto a desactivar.
+     * @returns Mensaje de confirmación en texto plano de la desactivación.
      * @throws Error si el producto con el ID especificado no es encontrado.
      */
     async delete(id: number) {
         const data = await this.findById(id);
         if (!data) throw new Error(`Entidad con id ${id} no encontrado`);
+        if (data.activo === false) return 'El producto ya estaba inactivo';
 
-        await this.repository.delete({ id });
-        return 'Se elimino correctamente!!!';
+        await this.repository.update({ id }, { activo: false });
+        return 'Se desactivo correctamente!!!';
     }
 
     /**

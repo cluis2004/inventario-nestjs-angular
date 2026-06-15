@@ -1,0 +1,144 @@
+<div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_420px]">
+  <section class="min-w-0">
+    <div class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <div>
+        <div class="flex flex-wrap items-center gap-3">
+          <h2 class="m-0 text-2xl font-bold text-slate-900">Nueva Venta</h2>
+        </div>
+        <p class="mt-2 text-sm text-slate-500">Busca productos, agrégalos al carrito y registra la venta.</p>
+      </div>
+      <a
+        routerLink="/ventas"
+        class="inline-flex items-center justify-center gap-2 border border-slate-300 bg-slate-100 px-5 py-2.5 font-medium text-slate-700 transition hover:bg-slate-200"
+      >
+        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+        <span>Ver Ventas</span>
+      </a>
+    </div>
+
+    <div class="mb-6">
+      <div>
+        <label class="mb-2 block text-sm font-semibold text-slate-700">Buscar producto</label>
+        <div class="relative">
+          <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+          <input
+            class="w-full border border-slate-300 bg-white py-3 pl-10 pr-3 text-slate-900 outline-none transition focus:border-emerald-500"
+            [ngModel]="searchTerm"
+            (ngModelChange)="onSearchChange($event)"
+            placeholder="Buscar por nombre, ID o código"
+            maxlength="80"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="loading()" class="py-16 text-center">
+      <div class="mx-auto h-9 w-9 animate-spin border-4 border-slate-100 border-t-emerald-600"></div>
+      <p class="mt-3 text-slate-500">Cargando productos...</p>
+    </div>
+
+    <div *ngIf="!loading() && hasSearchResults()" class="space-y-2">
+      <button
+        *ngFor="let product of getFilteredProducts(); trackBy: trackByProduct"
+        type="button"
+        class="flex w-full flex-col gap-3 border border-slate-300 bg-white px-4 py-3 text-left transition hover:border-emerald-400 hover:bg-emerald-50/30 disabled:cursor-not-allowed disabled:opacity-60 sm:flex-row sm:items-center sm:justify-between"
+        (click)="addProduct(product)"
+        [disabled]="!canAddProduct(product)"
+      >
+        <div class="min-w-0">
+          <div class="flex flex-wrap items-center gap-2">
+            <h3 class="truncate text-base font-semibold text-slate-900">{{ product.name }}</h3>
+            <span *ngIf="product.sku" class="bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">{{ product.sku }}</span>
+          </div>
+          <div class="mt-2 flex flex-wrap items-center gap-3 text-sm text-slate-500">
+            <span>Precio: <strong class="text-slate-800">{{ formatBs(product.price) }}</strong></span>
+            <span>Stock: <strong class="text-slate-800">{{ product.stock }}</strong></span>
+          </div>
+        </div>
+      </button>
+    </div>
+
+    <div *ngIf="!loading() && !hasSearchResults()" class="border border-dashed border-slate-300 px-6 py-12 text-center text-slate-500">
+      <p>No se encontraron productos con esa búsqueda.</p>
+    </div>
+  </section>
+
+  <aside class="border border-slate-200 bg-white p-4 xl:sticky xl:top-6 xl:h-fit">
+    <div class="mb-6 flex items-start justify-between gap-4">
+      <div>
+        <h3 class="m-0 text-xl font-bold text-slate-900">Carrito</h3>
+        <p class="mt-2 text-sm text-slate-500">{{ getCartItemsCount() }} unidades en la venta</p>
+      </div>
+      <button
+        *ngIf="cart.length > 0"
+        class="border border-red-200 px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50"
+        (click)="clearCart()"
+      >
+        Vaciar
+      </button>
+    </div>
+
+    <div *ngIf="cart.length === 0" class="border border-dashed border-slate-300 px-5 py-12 text-center text-slate-500">
+      <p>Agrega productos desde la lista para armar la venta.</p>
+    </div>
+
+    <div *ngIf="cart.length > 0" class="space-y-4">
+      <div *ngFor="let item of cart; let i = index; trackBy: trackByCartItem" class="border border-slate-300 p-4">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <h4 class="truncate font-semibold text-slate-900">{{ item.name }}</h4>
+            <p class="mt-1 text-sm text-slate-500">Precio: {{ formatBs(item.unit_price) }}</p>
+          </div>
+          <button class="border border-red-200 p-2 text-red-600 transition hover:bg-red-50" (click)="removeFromCart(i)" aria-label="Quitar producto">
+            <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg>
+          </button>
+        </div>
+
+        <div class="mt-4 flex items-center gap-2">
+          <button class="inline-flex h-10 w-10 items-center justify-center border border-slate-300 bg-slate-100 text-slate-700 transition hover:bg-slate-200" (click)="decreaseQuantity(i)">-</button>
+          <input
+            class="h-10 w-full border border-slate-300 px-3 text-center text-slate-900 outline-none transition focus:border-emerald-500"
+            type="number"
+            min="1"
+            step="1"
+            inputmode="numeric"
+            [max]="item.stock > 999999 ? 999999 : item.stock"
+            [ngModel]="item.quantity"
+            (ngModelChange)="updateQuantity(i, $event)"
+          />
+          <button class="inline-flex h-10 w-10 items-center justify-center border border-slate-300 bg-slate-100 text-slate-700 transition hover:bg-slate-200" (click)="increaseQuantity(i)">+</button>
+        </div>
+
+        <div class="mt-3 flex items-center justify-between text-sm">
+          <span class="text-slate-500">Subtotal</span>
+          <strong class="text-slate-900">{{ formatBs(getLineTotal(item)) }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6 border border-emerald-200 bg-emerald-50 px-5 py-4 text-emerald-900">
+      <div class="flex items-center justify-between text-sm">
+        <span>Productos</span>
+        <strong>{{ cart.length }}</strong>
+      </div>
+      <div class="mt-2 flex items-center justify-between text-sm">
+        <span>Unidades</span>
+        <strong>{{ getCartItemsCount() }}</strong>
+      </div>
+      <div class="mt-3 flex items-center justify-between border-t border-emerald-200 pt-3 text-base">
+        <span>Total</span>
+        <strong>{{ formatBs(getCartTotal()) }}</strong>
+      </div>
+    </div>
+
+    <button
+      class="mt-6 inline-flex w-full items-center justify-center gap-2 bg-emerald-600 px-5 py-3 font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-emerald-300"
+      (click)="saveSale()"
+      [disabled]="saving() || cart.length === 0"
+    >
+      <svg *ngIf="!saving()" class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><path d="M17 21v-8H7v8"></path><path d="M7 3v5h8"></path></svg>
+      <span *ngIf="saving()" class="h-4 w-4 animate-spin border-2 border-white/40 border-t-white"></span>
+      <span>{{ saving() ? 'Guardando venta...' : 'Confirmar Venta' }}</span>
+    </button>
+  </aside>
+</div>

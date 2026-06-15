@@ -1,31 +1,15 @@
-<div class="login-container">
-  <div class="login-card">
-    <div class="login-header">
-      <div class="logo-box">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
-          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-          <line x1="12" y1="22.08" x2="12" y2="12"></line>
-        </svg>
-      </div>
-      <h1>Inventario Control</h1>
-      <p>Inicia sesión para gestionar el stock</p>
-    </div>
-
-    <div class="login-body">
-      <div *ngIf="error()" class="alert alert-danger">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="alert-icon">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="12" y1="8" x2="12" y2="12"></line>
-          <line x1="12" y1="16" x2="12.01" y2="16"></line>
-        </svg>
-        <span>{{ error() }}</span>
+<div class="flex min-h-screen items-center justify-center bg-slate-100 px-4 py-8 sm:px-6">
+  <div class="w-full max-w-md border border-slate-200 bg-white p-6 shadow-xl shadow-slate-900/5 sm:p-8">
+    <div class="grid gap-4">
+      <div *ngIf="error()" class="border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+        {{ error() }}
       </div>
 
-      <div class="form-group">
-        <label for="email">Correo Electrónico</label>
-        <div class="input-wrapper">
+      <div class="grid gap-1.5">
+        <label for="email" class="text-sm font-medium text-slate-700">Correo Electrónico</label>
+        <div>
           <input
+            class="w-full border border-slate-300 bg-white px-3.5 py-3 text-slate-900 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
             type="email"
             id="email"
             [(ngModel)]="email"
@@ -37,11 +21,12 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="password">Contraseña</label>
-        <div class="input-wrapper">
+      <div class="grid gap-1.5">
+        <label for="password" class="text-sm font-medium text-slate-700">Contraseña</label>
+        <div class="relative">
           <input
-            type="password"
+            class="w-full border border-slate-300 bg-white px-3.5 py-3 pr-12 text-slate-900 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+            [type]="showPassword() ? 'text' : 'password'"
             id="password"
             [(ngModel)]="password"
             (keydown)="onKeyEnter($event)"
@@ -49,13 +34,25 @@
             [disabled]="loading()"
             required
           />
+          <button
+            type="button"
+            class="absolute right-2 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+            (click)="togglePassword()"
+            [disabled]="loading()"
+            aria-label="Ver contraseña"
+          >
+            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
         </div>
       </div>
 
-      <button (click)="login()" class="btn btn-primary" [disabled]="loading()">
+      <button (click)="login()" class="flex w-full items-center justify-center bg-slate-900 px-4 py-3 font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400" [disabled]="loading()">
         <span *ngIf="!loading()">Ingresar al Sistema</span>
-        <span *ngIf="loading()" class="spinner-text">
-          <span class="spinner"></span> Procesando...
+        <span *ngIf="loading()" class="inline-flex items-center gap-2">
+          <span class="h-4 w-4 animate-spin border-2 border-white/35 border-t-white"></span> Procesando...
         </span>
       </button>
     </div>

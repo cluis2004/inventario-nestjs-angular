@@ -9,14 +9,14 @@ import { SessionService } from '../../service/session.service';
     selector: 'app-login',
     standalone: true,
     imports: [CommonModule, FormsModule, RouterModule],
-    templateUrl: './login.html',
-    styleUrl: './login.css'
+    templateUrl: './login.html'
 })
 export class Login {
     email = '';
     password = '';
     loading = signal(false);
     error = signal('');
+    showPassword = signal(false);
 
     constructor(
         private readonly service: BasicService,
@@ -50,5 +50,9 @@ export class Login {
 
     onKeyEnter(event: KeyboardEvent): void {
         if (event.key === 'Enter') this.login();
+    }
+
+    togglePassword(): void {
+        this.showPassword.set(!this.showPassword());
     }
 }
