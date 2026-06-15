@@ -23,7 +23,7 @@ import { UsuarioModule } from './usuario/usuario.module';
           type: 'postgres' as const,
           url: databaseUrl || 'postgresql://postgres:postgres@localhost:5432/postgres',
           autoLoadEntities: true,
-          synchronize: false,
+          synchronize: true,
           ssl: databaseUrl && !databaseUrl.includes('localhost') && !databaseUrl.includes('127.0.0.1')
             ? { rejectUnauthorized: false }
             : false,
